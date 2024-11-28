@@ -43,22 +43,22 @@ export const ChatDeptSelector: FC<Prop> = (props) => {
         <FormControlLabel
           value="it"
           control={<Radio />}
-          label={<span className="text-sm text-muted-foreground">ITヘルプデスク</span>}
+          label={<span className="text-sm text-muted-foreground">最新の機構マニュアル</span>}
         />
         <FormControlLabel
           value="hr"
           control={<Radio />}
-          label={<span className="text-sm text-muted-foreground">人事</span>}
+          label={<span className="text-sm text-muted-foreground">機構マニュアルバックログ</span>}
         />
         <FormControlLabel
           value="fi"
           control={<Radio />}
-          label={<span className="text-sm text-muted-foreground">経理</span>}
+          label={<span className="text-sm text-muted-foreground">社内規定</span>}
         />
         <FormControlLabel
           value="sales"
           control={<Radio />}
-          label={<span className="text-sm text-muted-foreground">みんなび</span>}
+          label={<span className="text-sm text-muted-foreground">その他</span>}
         />
       </RadioGroup>
       <div className="mt-2 text-center text-sm text-gray-600">

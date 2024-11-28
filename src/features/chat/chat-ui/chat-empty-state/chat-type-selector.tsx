@@ -40,7 +40,6 @@ export const ChatTypeSelector: FC<Prop> = (props) => {
         >
           <FileText size={20} /> 文書要約
         </TabsTrigger>              
-
         <TabsTrigger
         value="doc"
         className="flex gap-1"
@@ -48,7 +47,7 @@ export const ChatTypeSelector: FC<Prop> = (props) => {
         >
         <FileText size={20} /> 社内FAQ
         </TabsTrigger>   
-        </TabsList>
+       </TabsList>
      </Tabs>
   );
 };
