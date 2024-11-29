@@ -32,7 +32,7 @@ const configureIdentityProvider = () => {
     );
   }
 */
-  if (process.env.NODE_ENV !== "aaa") {
+  if (process.env.NODE_ENV !== "development") {
     providers.push(
     CredentialsProvider({
       name: "localdev",
