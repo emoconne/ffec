@@ -10,22 +10,6 @@ const configureIdentityProvider = () => {
 
   const adminEmails = process.env.ADMIN_EMAIL_ADDRESS?.split(",").map(email => email.toLowerCase().trim());
 
-  if (process.env.AUTH_GITHUB_ID && process.env.AUTH_GITHUB_SECRET) {
-    providers.push(
-      GitHubProvider({
-        clientId: process.env.AUTH_GITHUB_ID!,
-        clientSecret: process.env.AUTH_GITHUB_SECRET!,
-        async profile(profile) {
-          const newProfile = {
-            ...profile,
-            isAdmin: adminEmails?.includes(profile.email.toLowerCase())
-          }
-          return newProfile;
-        }
-      })
-    );
-  }
-
   if (
     process.env.AZURE_AD_CLIENT_ID &&
     process.env.AZURE_AD_CLIENT_SECRET &&
@@ -48,31 +32,55 @@ const configureIdentityProvider = () => {
     );
   }
 
-  if (process.env.NODE_ENV === "development") {
+  if (process.env.NODE_ENV === "production") {
     providers.push(
-      CredentialsProvider({
-        name: "localdev",
-        credentials: {
-          username: { label: "Username", type: "text", placeholder: "dev" },
-          password: { label: "Password", type: "password" },
-        },    
-        async authorize(credentials, req): Promise<any> {
-          const username = credentials?.username || "dev";
-          const email = username + "@localhost";
-          const user = {
-              id: hashValue(email),
-              name: username,
-              email: email,
-              isAdmin: true,
-              image: "",
-            };
-          console.log("=== DEV USER LOGGED IN:\n", JSON.stringify(user, null, 2));
-          return user;
-        }
-      })
-    );
-  }
-
+    CredentialsProvider({
+      name: "localdev",
+      credentials: {
+        username: { label: "社員番号", type: "text", placeholder: "6桁の従業員番号" }
+      },    
+      async authorize(credentials, req): Promise<any> {
+        const username = credentials?.username || "dev";
+        const email = username + "@localhost";
+        const user = {
+            id: hashValue(email),
+            name: username,
+            email: email,
+            isAdmin: true,
+            image: "",
+          };
+        console.log("=== DEV USER LOGGED IN:\n", JSON.stringify(user, null, 2));
+        return user;
+      }
+    })
+  );
+}
+/*
+if (process.env.NODE_ENV === "development") {
+  providers.push(
+  CredentialsProvider({
+    name: "localdev",
+    credentials: {
+      username: { label: "Username", type: "text", placeholder: "dev" },
+      password: { label: "Password", type: "password" },
+    },    
+    async authorize(credentials, req): Promise<any> {
+      const username = credentials?.username || "dev";
+      const email = username + "@localhost";
+      const user = {
+          id: hashValue(email),
+          name: username,
+          email: email,
+          isAdmin: true,
+          image: "",
+        };
+      console.log("=== DEV USER LOGGED IN:\n", JSON.stringify(user, null, 2));
+      return user;
+    }
+  })
+);
+}
+*/
   return providers;
 };
 
