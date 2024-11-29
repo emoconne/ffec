@@ -14,11 +14,11 @@ interface Prop {
 }
 
 const chatDocLabels: Record<ChatDoc, string> = {
-  all: "すべての部門",
-  it: "ITヘルプデスク",
-  hr: "人事",
-  fi: "経理",
-  sales: "みんなび"
+  all: "すべての情報",
+  it: "リスク・CD",
+  hr: "自治体関連",
+  fi: "安全管理基準",
+  sales: "その他"
 };
 
 export const ChatDeptSelector: FC<Prop> = (props) => {
@@ -43,22 +43,17 @@ export const ChatDeptSelector: FC<Prop> = (props) => {
         <FormControlLabel
           value="it"
           control={<Radio />}
-          label={<span className="text-sm text-muted-foreground">最新の機構マニュアル</span>}
+          label={<span className="text-sm text-muted-foreground">リスク・CD</span>}
         />
         <FormControlLabel
           value="hr"
           control={<Radio />}
-          label={<span className="text-sm text-muted-foreground">機構マニュアルバックログ</span>}
+          label={<span className="text-sm text-muted-foreground">自治体関連</span>}
         />
         <FormControlLabel
           value="fi"
           control={<Radio />}
-          label={<span className="text-sm text-muted-foreground">社内規定</span>}
-        />
-        <FormControlLabel
-          value="sales"
-          control={<Radio />}
-          label={<span className="text-sm text-muted-foreground">その他</span>}
+          label={<span className="text-sm text-muted-foreground">安全管理基準</span>}
         />
       </RadioGroup>
       <div className="mt-2 text-center text-sm text-gray-600">
