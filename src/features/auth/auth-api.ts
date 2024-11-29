@@ -9,7 +9,7 @@ const configureIdentityProvider = () => {
   const providers: Array<Provider> = [];
 
   const adminEmails = process.env.ADMIN_EMAIL_ADDRESS?.split(",").map(email => email.toLowerCase().trim());
-
+/*
   if (
     process.env.AZURE_AD_CLIENT_ID &&
     process.env.AZURE_AD_CLIENT_SECRET &&
@@ -31,8 +31,8 @@ const configureIdentityProvider = () => {
       })
     );
   }
-
-  if (process.env.NODE_ENV === "production") {
+*/
+  if (process.env.NODE_ENV !== "aaa") {
     providers.push(
     CredentialsProvider({
       name: "localdev",

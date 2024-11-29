@@ -22,16 +22,13 @@ export const LogIn = () => {
           <span className="text-primary">{AI_NAME}</span>
         </CardTitle>
         <CardDescription>
-        Azure Entraでログインをしてください。
+        下記のボタンからログインをしてください。
         </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-4">
         <Button onClick={() => signIn("azure-ad")}> Azure Entraでログイン</Button>
         {process.env.NODE_ENV === "development" && (
           <Button onClick={() => signIn("localdev")}>Basic Auth (DEV ONLY)</Button>
-          )}
-        {process.env.NODE_ENV === "development" && (
-          <Button onClick={() => signIn("github")}>GitHub</Button>
           )}
 
       </CardContent>
