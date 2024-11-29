@@ -4,11 +4,9 @@ import { AI_NAME } from "@/features/theme/customise";
 import { OpenAIStream, StreamingTextResponse } from "ai";
 import { initAndGuardChatSession } from "./chat-thread-service";
 import { CosmosDBChatMessageHistory } from "./cosmosdb/cosmosdb";
-import { BingSearchResult } from "./Azure-bing-search/bing";
 import { PromptGPTProps } from "./models";
-import puppeteer from 'puppeteer';
 
-export const ChatAPIWeb = async (props: PromptGPTProps) => {
+export const ChatAPISimple = async (props: PromptGPTProps) => {
   // Destructure and initialize variables
   const { lastHumanMessage, chatThread } = await initAndGuardChatSession(props);
   const openAI = OpenAIInstance();
@@ -16,56 +14,6 @@ export const ChatAPIWeb = async (props: PromptGPTProps) => {
 
   // Select appropriate model
   let chatAPIModel = props.chatAPIModel === "GPT-3" ? "gpt-35-turbo-16k" : "gpt-4o-mini";
-
-  // Initialize Bing Search
-  const bing = new BingSearchResult();
-  const searchResult = await bing.SearchWeb(lastHumanMessage.content);
-
-  // Enhanced web page content extraction
-  const webPageContents = await Promise.all(
-    searchResult.webPages.value.slice(0, 5).map(async (page: any) => {
-      try {
-        // Use Puppeteer to scrape page content
-        const browser = await puppeteer.launch({ headless: true });
-        const pageInstance = await browser.newPage();
-        await pageInstance.goto(page.url, { waitUntil: 'networkidle0' });
-        
-        // Extract main content, avoiding scripts, styles, etc.
-        const pageText = await pageInstance.evaluate(() => {
-          // Remove script, style, and other non-content elements
-          const scripts = document.getElementsByTagName('script');
-          const styles = document.getElementsByTagName('style');
-          Array.from(scripts).forEach(script => script.remove());
-          Array.from(styles).forEach(style => style.remove());
-          
-          // Try to extract main content
-          const mainContent = 
-            document.querySelector('main')?.innerText || 
-            document.querySelector('article')?.innerText || 
-            document.body.innerText;
-          
-          return mainContent || '';
-        });
-
-        await browser.close();
-
-        return {
-          url: page.url,
-          title: page.name,
-          snippet: page.snippet,
-          content: pageText.substring(0, 2000) // Limit content length
-        };
-      } catch (error) {
-        console.error(`Error scraping ${page.url}:`, error);
-        return {
-          url: page.url,
-          title: page.name,
-          snippet: page.snippet,
-          content: page.snippet
-        };
-      }
-    })
-  );
 
   // Initialize chat history
   const chatHistory = new CosmosDBChatMessageHistory({
@@ -83,23 +31,6 @@ export const ChatAPIWeb = async (props: PromptGPTProps) => {
   const history = await chatHistory.getMessages();
   const topHistory = history.slice(history.length - 30, history.length);
 
-  // Construct comprehensive prompt with conversation history
-  const Prompt = `
-問い合わせ: ${lastHumanMessage.content}
-
-Web検索結果の概要:
-${webPageContents.map(page => 
-  `タイトル: ${page.title}
-URL: ${page.url}
-スニペット: ${page.snippet}
-
-詳細コンテンツ抜粋:
-${page.content.substring(0, 500)}...
-`).join('\n\n')}
-
-上記の検索結果を踏まえて、元の質問に対して包括的かつ情報豊富な回答を2000文字程度で生成してください。
-`;
-
   try {
     // Create OpenAI chat completion
     const response = await openAI.chat.completions.create({
@@ -108,13 +39,13 @@ ${page.content.substring(0, 500)}...
           role: "system",
           content: `あなたは ${AI_NAME} です。ユーザーからの質問に対して日本語で丁寧に回答します。
           - 質問には正直かつ正確に答えます。
-          - Web検索結果を参考にしつつ、信頼性の高い情報を提供します。
-          - 情報の出典を適切に示します。`,
+          - 情報を分かりやすく説明します。
+          - 必要に応じて簡潔で的確な回答を心がけます。`,
         },
         ...topHistory,
         {
           role: "user",
-          content: Prompt,
+          content: lastHumanMessage.content,
         }
       ],
       model: chatAPIModel,
