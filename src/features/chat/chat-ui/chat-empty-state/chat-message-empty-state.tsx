@@ -45,7 +45,6 @@ export const ChatMessageEmptyState: FC<Prop> = (props) => {
           </p>
           <ChatTypeSelector disable={false} />
         </div>
-        {(showFileUpload === "doc") && <ChatDeptSelector disable={false} />} 
         {(showFileUpload === "data") && <ChatFileUI />} 
        {/* {((showFileUpload === "doc") && session?.user?.isAdmin) && <ChatFileUI_doc />}  */}
        <div className="flex flex-col gap-2">

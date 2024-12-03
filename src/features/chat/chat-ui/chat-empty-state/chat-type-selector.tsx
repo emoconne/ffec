@@ -26,14 +26,6 @@ export const ChatTypeSelector: FC<Prop> = (props) => {
         >
         <FileText size={20} /> リスク・CD
         </TabsTrigger>   
-
-        <TabsTrigger
-          value="data"
-          className="flex gap-1"
-          disabled={props.disable}
-        >
-          <FileText size={20} /> 文書Upload＆要約
-        </TabsTrigger>       
         <TabsTrigger
           value="web"
           className="flex gap-1"

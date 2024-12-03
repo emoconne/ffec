@@ -1,1 +1,1 @@
-export const AI_NAME = "Private GPT";
+export const AI_NAME = "GAI(General Artificial Intelligence)";
