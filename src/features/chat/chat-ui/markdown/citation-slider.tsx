@@ -35,7 +35,7 @@ export const CitationSlider: FC<SliderProps> = (props) => {
         </SheetTrigger>
         <SheetContent>
           <SheetHeader>
-            <SheetTitle>Citation</SheetTitle>
+            <SheetTitle>引用元</SheetTitle>
           </SheetHeader>
           <div className="text-sm text-muted-foreground">{node}</div>
         </SheetContent>

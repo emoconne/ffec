@@ -9,36 +9,19 @@ import { PromptGPTProps , ChatDoc} from "./models";
 
 const SYSTEM_PROMPT = `あなたは ${AI_NAME}です。ユーザーからの質問に対して日本語で丁寧に回答します。 \n`;
 
-// const CONTEXT_PROMPT = ({
-//   context,
-//   userQuestion,
-// }: {
-//   context: string;
-//   userQuestion: string;
-// }) => {
-//   return `
-// - Given the following extracted parts of a long document, create a final answer. \n
-// - If you don't know the answer, just say that you don't know. Don't try to make up an answer.\n
-// - You must always include a citation at the end of your answer and don't include full stop.\n
-// - Use the format for your citation {% citation items=[{name:"関連情報 1",id:"file id"}, {name:"関連情報 2",id:"file id"}] /%}\n 
-// ----------------\n 
-// context:\n 
-// ${context}
-// ----------------\n 
-// question: ${userQuestion}`;
-// };
-
 const CONTEXT_PROMPT = ({
   context,
   userQuestion,
+  citations
 }: {
   context: string;
   userQuestion: string;
+  citations: Array<{name: string, id: string}>
 }) => {
   return ` - Given the following extracted parts of a long document, create a final answer. \n
   - If you don't know the answer, just say that you don't know. Don't try to make up an answer.\n
-  - You must always include a citation at the end of your answer and don't include full stop.\n
-  - Use exactly this format for citation: {%citation items=[{name:"NAME",id:"ID"}]/%}\n
+  - You must always include a citation at the end of your answer.\n
+  - Use exactly this format for citation: {%citation items=[${citations.map(c => `{name:"${c.name}",id:"${c.id}"}`).join(',')}]/%}\n
   ----------------\n
   context:\n
   ${context}
@@ -58,15 +41,12 @@ export const ChatAPIDoc = async (props: PromptGPTProps) => {
   let chatAPIModel = "";
   if (props.chatAPIModel === "GPT-3") {
     chatAPIModel = "gpt-35-turbo-16k";
-  }else{
+  } else {
     chatAPIModel = "gpt-4o";
   }
-  chatAPIModel = "gpt-4o-mini"
- // console.log("Model_doc: ", process.env.AZURE_OPENAI_API_DEPLOYMENT_NAME);
- // console.log("PromptGPTProps_doc: ", props.chatAPIModel);
+  chatAPIModel = "gpt-4o-mini";
 
   let chatDoc = props.chatDoc;
-
 
   const chatHistory = new CosmosDBChatMessageHistory({
     sessionId: chatThread.id,
@@ -84,10 +64,14 @@ export const ChatAPIDoc = async (props: PromptGPTProps) => {
   const context = relevantDocuments
     .map((result, index) => {
       const content = result.pageContent.replace(/(\r\n|\n|\r)/gm, "");
-      const context = `[${index}]. よくある質問: ${result.source} \n file id: ${result.id} \n ${content}`;
-      return context;
+      return `[${index + 1}]. ${content}`;
     })
     .join("\n------\n");
+
+  const citations = relevantDocuments.map((result) => ({
+    name: result.source,
+    id: result.id
+  }));
 
   try {
     const response = await openAI.chat.completions.create({
@@ -102,10 +86,10 @@ export const ChatAPIDoc = async (props: PromptGPTProps) => {
           content: CONTEXT_PROMPT({
             context,
             userQuestion: lastHumanMessage.content,
+            citations: citations
           }),
         },
       ],
-      //model: process.env.AZURE_OPENAI_API_DEPLOYMENT_NAME,
       model: chatAPIModel,
       stream: true,
     });
