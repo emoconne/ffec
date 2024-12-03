@@ -21,10 +21,8 @@ export const CitationAction = async (
         <div>{firstResult.id} </div>
       </div>
       <div className="border rounded-sm p-2">
-        <div className="font-bold">kintone link</div>
-        <a href={`${firstResult.metadata}`} target="_blank">
-          {firstResult.source}
-        </a>
+        <div className="font-bold">参考情報</div>
+         {firstResult.source}
         </div>
       <p>{firstResult.pageContent}</p>
     </div>
